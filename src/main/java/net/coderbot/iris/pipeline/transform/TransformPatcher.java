@@ -322,7 +322,15 @@ public class TransformPatcher {
 				inputs.put(PatchShaderType.FRAGMENT_CUTOUT, fragment);
 			}
 
+			transformer.getLexer().enableCustomDirective = true;
 			result = transformer.transform(inputs, parameters);
+			for(PatchShaderType type : result.keySet()) {
+				String shader = result.get(type);
+				if (shader != null) {
+					shader = shader.replaceAll("vec2 glsltransformer_line_(\\d+)_(\\d+);", "#line $1 $2");
+					result.replace(type, shader);
+				}
+			}
 			if (useCache) {
 				cache.put(key, result);
 			}
